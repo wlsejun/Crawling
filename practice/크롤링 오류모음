@@ -1,3 +1,5 @@
+# 크롤링 오류 및 해결모음
+
 1. 브라우저 접속할 때는 되는데 requests 로 접속안 될때
 -> Header 확인하기
 -> 주요 header : User-Agent , Cookie, Accept, Referer
