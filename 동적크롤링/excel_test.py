@@ -1,3 +1,4 @@
+import openpyxl
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
@@ -6,15 +7,16 @@ from selenium.webdriver.common.keys import Keys
 import time
 import os
 
+# 새 엑셀 파일 생성
+workbook = openpyxl.Workbook()
+sheet = workbook.active
+
+# 데이터를 저장할 엑셀 파일의 헤더 추가
+sheet.append(["날짜", "거래량", "기관", "외국인"])
+
+# 데이터 작업을 위한 코드 (위의 코드를 활용)
 driver = webdriver.Firefox()
 wait = WebDriverWait(driver, 10)
-
-def find_present(css):
-    return wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, css)))
-
-def finds_present(css):
-    find_present(css)
-    return driver.find_elements(By.CSS_SELECTOR, css)
 
 def find_visible(css):
     return wait.until(EC.visibility_of_element_located((By.CSS_SELECTOR, css)))
@@ -45,16 +47,17 @@ investor = finds_visible("ul.tabs_submenu > li:nth-child(4) > a")
 investor[0].click()
 
 #
-for i in range(4, 10):
+
+for i in range(4, 51):
     volume = finds_visible(f"table.type2:nth-child(4) > tbody:nth-child(2) > tr:nth-child({i}) > td")
     
     if len(volume) >= 7:  # td 요소가 최소한 7개 이상인 경우에만 선택
-        print("날짜:", volume[0].text)
-        print("거래량:", volume[4].text)
-        print("기관:", volume[5].text)
-        print("외국인:", volume[6].text)
-        print("-------------")
+        date = volume[0].text
+        trading_volume = volume[4].text
+        institution = volume[5].text
+        foreign_investor = volume[6].text
+        
+        sheet.append([date, trading_volume, institution, foreign_investor])
 
-time.sleep(5)
-
-driver.quit()
+# 엑셀 파일 저장
+workbook.save("output.xlsx")
